@@ -1,0 +1,16 @@
+<template name="invoicesTable">
+  <table>
+    <tr>
+      <th>INVOICE_NUMBER</th>
+      <th>TOTAL</th>
+      <th>CREATED_AT</th>
+    </tr>
+    {{#each invoices}}
+    <tr>
+    <th><span class="text">{{invoiceNumber}}</span></th>
+    <th><span class="number">{{total}}</span></th>
+    <th><span class="date">{{dateFormating createdAt}}</span></th>
+    </tr>
+    {{/each}}
+  </table>
+</template>
