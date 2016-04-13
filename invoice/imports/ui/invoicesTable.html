@@ -9,11 +9,11 @@
       <th>TOTAL <button class="sort" value="sortTotal"> sort </button> </th>
       <th>CREATED_AT <button class="sort" value="sortCreatedAt"> sort </button> </th>
     </tr>
-    {{#each invoices}}
+    {{#each invoice in invoices}}
     <tr>
-    <th><span class="text">{{invoiceNumber}}</span></th>
-    <th><span class="number">{{total}}</span></th>
-    <th><span class="date">{{dateFormating createdAt}}</span></th>
+    <th><span class="text">{{invoice.invoiceNumber}}</span></th>
+    <th><span class="number">{{invoice.total}}</span></th>
+    <th><span class="date">{{dateFormating invoice.createdAt}}</span></th>
     </tr>
     {{/each}}
   </table>

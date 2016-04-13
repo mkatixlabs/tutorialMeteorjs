@@ -1,22 +1,24 @@
-
-import { Meteor } from 'meteor/meteor';
-import { Template } from 'meteor/templating';
-import { ReactiveDict } from 'meteor/reactive-dict';
-import { Invoices } from '../api/invoices.js';
+import {
+	Meteor 
+} from 'meteor/meteor';
+import { 
+	Template 
+} from 'meteor/templating';
+import { 
+	ReactiveDict 
+} from 'meteor/reactive-dict';
+import { 
+	Invoices 
+} from '../api/invoices.js';
 
 import moment from 'moment';
 import './invoicesTable.html';
 
-
 Template.invoicesTable.onCreated(function bodyOnCreated() {
-	this.state = new ReactiveDict()
-	this.state.set('dateFilterType', 'all')
-	this.state.set('sortTotal', 'asc')
-	this.state.set('sortCreatedAt', 'asc')
 
- 	Meteor.subscribe('invoices', createQueryFilter(this.state));
+	const controller = Iron.controller();
+ 	Meteor.subscribe('invoices', createQueryDateFilter(controller.state));
 });
-
 
 function getDateFilter(type) {
 	switch (type) {
@@ -31,8 +33,8 @@ function getDateFilter(type) {
   	} 
 }
 
-function createQueryFilter(state) {
-	const dateFilter = getDateFilter(state.get('dateFilterType'))
+function createQueryDateFilter(state) {
+	const dateFilter = getDateFilter(state.get('dateFilter'))
  	const queryFilter = {}
 	/* $gte selects the documents where the value of the field is greater than or equal to (i.e. >=)
   		a specified value (e.g. value.) */
@@ -51,27 +53,50 @@ function createSort(state) {
   }
 }
 
+function getQueryFromState( state ) {
+  const query = state
+  delete query.dateFilter
+  return query
+}
+
 Template.invoicesTable.helpers({
   invoices() {
-  	const state = Template.instance().state
- 	const queryFilter = createQueryFilter(state)
- 	const sortedBy = createSort(state)
+  	const controller = Iron.controller();
+
+ 	const queryFilter = createQueryDateFilter(controller.state)
+ 	const sortedBy = createSort(controller.state)
 
   	return Invoices.find(queryFilter, {sort: sortedBy})
   },
   dateFormating(date) {
   	return moment(date).format('YYYY-MM-DD')
   },
+  test(){
+  	console.log("test")
+  }
 });
 
 Template.invoicesTable.events({
   'click .filter'(event, instance) {
-  	instance.state.set('dateFilterType', event.target.value)
+  	
+   	Router.go('invoices', {
+       dateFilter: event.target.value
+    }, {
+        query: getQueryFromState(Iron.controller().state.all())
+    })
+
   },
   'click .sort'(event, instance) {
+  	const controller = Iron.controller();
   	const sortType = event.target.value
-  	let sortValue = instance.state.get(sortType)
+  	let sortValue = controller.state.get(sortType)
   	sortValue === 'asc' ? sortValue = 'desc' : sortValue = 'asc'
-  	instance.state.set(sortType, sortValue)
+  	controller.state.set(sortType, sortValue)
+
+   	Router.go('invoices', {
+       dateFilter: controller.state.get('dateFilter')
+    }, {
+        query: getQueryFromState(controller.state.all())
+    })
   },
 });

@@ -1,8 +1,11 @@
-import { Meteor } from 'meteor/meteor';
-import { Invoices } from '../imports/api/invoices.js';	
-import faker from 'faker'; 
-//import '../imports/api/invoices.js';
+import { 
+	Meteor 
+} from 'meteor/meteor';
+import { 
+	Invoices 
+} from '../imports/api/invoices.js';	
 
+import faker from 'faker'; 
 
 function generateRandomNumber(digits) {
 	return faker.finance.account(digits)

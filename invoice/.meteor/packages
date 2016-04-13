@@ -21,3 +21,4 @@ insecure                # Allow all DB writes from clients (for prototyping)
 space:template-controller
 aslagle:reactive-table
 reactive-dict
+iron:router
