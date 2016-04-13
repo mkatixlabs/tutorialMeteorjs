@@ -1,7 +1,6 @@
 allow-deny@1.0.3
 anti:i18n@0.4.3
 aslagle:reactive-table@0.8.28
-autopublish@1.0.6
 autoupdate@1.2.7
 babel-compiler@6.6.1
 babel-runtime@0.1.7
@@ -53,6 +52,7 @@ observe-sequence@1.0.10
 ordered-dict@1.0.6
 promise@0.6.6
 random@1.0.8
+reactive-dict@1.1.6
 reactive-var@1.0.8
 reload@1.1.7
 retry@1.0.6

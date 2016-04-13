@@ -2,6 +2,12 @@ import { Mongo } from 'meteor/mongo';
  
 export const Invoices = new Mongo.Collection('invoices');
 
+if (Meteor.isServer) {
+  Meteor.publish('invoices', function tasksPublication() {
+     return Invoices.find({});
+  });
+}
+
 /*Invoices.schema = new SimpleSchema({
   invoiceNumber: {type: String},
   total: {type: Number, defaultValue: 0},
