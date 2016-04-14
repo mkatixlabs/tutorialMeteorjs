@@ -1,8 +1,5 @@
 <template name="invoicesTable">
-  <button class="filter" value="today">today</button>
-  <button class="filter" value="week">week</button>
-  <button class="filter" value="month">month</button>
-  <button class="filter" value="all">all</button>
+  {{> TimeFilters actual=currentTimeFilter onTimeFilterSelected=onTimeFilterSelected}}
   <table>
     <tr>
       <th>INVOICE_NUMBER</th>
@@ -11,11 +8,11 @@
     </tr>
 
 
-    {{#each invoice in invoices}}
+    {{#each invoices}}
     <tr>
-    <th><span class="text">{{invoice.invoiceNumber}}</span></th>
-    <th><span class="number">{{invoice.total}}</span></th>
-    <th><span class="date">{{dateFormating invoice.createdAt}}</span></th>
+    <th><span class="text">{{invoiceNumber}}</span></th>
+    <th><span class="number">{{total}}</span></th>
+    <th><span class="date">{{dateFormating createdAt}}</span></th>
     </tr>
     {{/each}}
 

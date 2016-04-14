@@ -1,0 +1,8 @@
+<template name="TimeFilters">
+  <div class="btn-group" role="group" aria-label="...">
+    <button id="today" type="button" class="btn btn-default time-filter {{ getActiveClass 'today' }}">Today</button>
+    <button id="week" type="button" class="btn btn-default time-filter {{ getActiveClass 'week' }}">Week</button>
+    <button id="month" type="button" class="btn btn-default time-filter {{ getActiveClass 'month' }}">Month</button>
+    <button id="all" type="button" class="btn btn-default time-filter {{ getActiveClass 'all' }}">All</button>
+  </div>
+</template>

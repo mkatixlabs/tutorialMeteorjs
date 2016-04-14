@@ -8,13 +8,13 @@ Router.route('/', function () {
   	this.redirect('/invoices/all')
 });
 
-Router.route('/invoices/:dateFilter', function () {
-	if (this.params.dateFilter === null) 
+Router.route('/invoices/:timeFilter', function () {
+	if (this.params.timeFilter === null) 
 		this.redirect('/invoices/all')
-  	this.state.set('dateFilter', this.params.dateFilter)
+  	this.state.set('timeFilter', this.params.timeFilter)
   	this.state.set('sortTotal', this.params.query.sortTotal)
   	this.state.set('sortCreatedAt', this.params.query.sortCreatedAt)
-  	this.state.set('invoiceLimit', 30)
+  	this.state.set('invoiceLimit', 25)
 
   	this.render('invoicesTable', {to:'main'})
 }, {
