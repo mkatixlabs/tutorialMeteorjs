@@ -17,7 +17,7 @@ function generateRandomDate() {
 
 Meteor.startup( () => {
 	Invoices.remove({}, () => {
-		for (i = 1 ; i <= 50; i++) {
+		for (i = 1 ; i <= 100; i++) {
 			Invoices.insert({
       			invoiceNumber: generateRandomNumber(5),
       			total: i*10,

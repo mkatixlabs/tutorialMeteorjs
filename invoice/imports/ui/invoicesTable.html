@@ -9,6 +9,8 @@
       <th>TOTAL <button class="sort" value="sortTotal"> sort </button> </th>
       <th>CREATED_AT <button class="sort" value="sortCreatedAt"> sort </button> </th>
     </tr>
+
+
     {{#each invoice in invoices}}
     <tr>
     <th><span class="text">{{invoice.invoiceNumber}}</span></th>
@@ -16,5 +18,12 @@
     <th><span class="date">{{dateFormating invoice.createdAt}}</span></th>
     </tr>
     {{/each}}
+
+    {{#if moreResults}}
+    <div id="showMoreResults" style="margin-left: 25px;">
+        <span class="loading">Loading...</span>
+    </div>
+    {{/if}}
+  
   </table>
 </template>

@@ -15,9 +15,28 @@ import moment from 'moment';
 import './invoicesTable.html';
 
 Template.invoicesTable.onCreated(function bodyOnCreated() {
+	const controllerState = Iron.controller().state
+	this.state = new ReactiveDict(0)
+	this.state.set('loadedInvoices', 0)
+	  	//this.state.set('loadedInvoices', this.state.get('loadedInvoices') + 5)
+	
+	this.autorun( () => {
+		Meteor.subscribe('invoices', createQueryDateFilter(controllerState), createQuerySortAndLimit(controllerState));
+	})
+ 
+});  
 
-	const controller = Iron.controller();
- 	Meteor.subscribe('invoices', createQueryDateFilter(controller.state));
+Template.invoicesTable.onRendered(function(){
+  const controllerState = Iron.controller().state;
+  this.scrollHandler = () => {
+    return showMoreVisible(controllerState);
+  }
+
+  $(window).on("scroll" ,this.scrollHandler);
+});
+
+Template.invoicesTable.onDestroyed(function(){
+  $(window).off("scroll", this.scrollHandler);
 });
 
 function getDateFilter(type) {
@@ -53,32 +72,72 @@ function createSort(state) {
   }
 }
 
+function getLoadLimit(state) {
+	return state.get('invoiceLimit')
+}
+
+function createQuerySortAndLimit(state) {
+	return {
+		sort: createSort(state),
+		limit: getLoadLimit(state)
+	}
+}
+
 function getQueryFromState( state ) {
   const query = state
   delete query.dateFilter
   return query
 }
 
+const LOAD_SIZE = 20
+function showMoreVisible(state) {
+    var threshold, target = $("#showMoreResults");
+
+    if (!target.length) 
+    	return;
+ 
+    threshold = $(window).scrollTop() + $(window).height() - target.height();
+    if (target.offset().top < threshold) {
+        if (!target.data("visible")) {
+            state.set("invoiceLimit", state.get("invoiceLimit") + LOAD_SIZE);
+        }
+    } else {
+        if (target.data("visible")) {
+            target.data("visible", false);
+        }
+    }        
+}
+ 
+function getLoadedInvoices(state) {
+	return state.get('loadedInvoices')
+}
+
 Template.invoicesTable.helpers({
+ 
   invoices() {
-  	const controller = Iron.controller();
+  	const controllerState = Iron.controller().state;
+  	const instance = Template.instance()
+  	const invoices = Invoices.find(createQueryDateFilter(controllerState), createQuerySortAndLimit(controllerState))
+  	instance.state.set('loadedInvoices', invoices.count())
 
- 	const queryFilter = createQueryDateFilter(controller.state)
- 	const sortedBy = createSort(controller.state)
-
-  	return Invoices.find(queryFilter, {sort: sortedBy})
+  	return invoices
   },
+
   dateFormating(date) {
   	return moment(date).format('YYYY-MM-DD')
   },
-  test(){
-  	console.log("test")
+
+  moreResults() {
+  	const controllerState = Iron.controller().state;
+  	const templateState = Template.instance().state
+  	return !(getLoadedInvoices(templateState) < getLoadLimit(controllerState));
   }
+
 });
 
 Template.invoicesTable.events({
+
   'click .filter'(event, instance) {
-  	
    	Router.go('invoices', {
        dateFilter: event.target.value
     }, {
@@ -87,16 +146,17 @@ Template.invoicesTable.events({
 
   },
   'click .sort'(event, instance) {
-  	const controller = Iron.controller();
+  	const controllerState = Iron.controller().state;
   	const sortType = event.target.value
-  	let sortValue = controller.state.get(sortType)
+  	let sortValue = controllerState.get(sortType)
   	sortValue === 'asc' ? sortValue = 'desc' : sortValue = 'asc'
-  	controller.state.set(sortType, sortValue)
+  	controllerState.set(sortType, sortValue)
 
    	Router.go('invoices', {
-       dateFilter: controller.state.get('dateFilter')
+       dateFilter: controllerState.get('dateFilter')
     }, {
-        query: getQueryFromState(controller.state.all())
+        query: getQueryFromState(controllerState.all())
     })
   },
+
 });

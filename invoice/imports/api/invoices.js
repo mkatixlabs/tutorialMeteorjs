@@ -5,11 +5,11 @@ import {
 export const Invoices = new Mongo.Collection('invoices');
 
 if (Meteor.isServer) {
-  Meteor.publish('invoices', function invoicesPublication(query) {
-     return Invoices.find(query);
+  Meteor.publish('invoices', function invoicesPublication(query, sortAndLimit) {
+    return Invoices.find(query, sortAndLimit);
   });
 }
-
+ 
 /*Invoices.schema = new SimpleSchema({
   invoiceNumber: {type: String},
   total: {type: Number, defaultValue: 0},

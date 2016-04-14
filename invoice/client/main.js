@@ -14,6 +14,7 @@ Router.route('/invoices/:dateFilter', function () {
   	this.state.set('dateFilter', this.params.dateFilter)
   	this.state.set('sortTotal', this.params.query.sortTotal)
   	this.state.set('sortCreatedAt', this.params.query.sortCreatedAt)
+  	this.state.set('invoiceLimit', 30)
 
   	this.render('invoicesTable', {to:'main'})
 }, {
