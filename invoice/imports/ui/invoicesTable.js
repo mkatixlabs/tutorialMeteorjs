@@ -11,10 +11,9 @@ import {
 	Invoices 
 } from '../api/invoices.js';
 
-
-import moment from 'moment';
 import './infiniteScroll.js'
 import './timeFilters.js';
+import '../helpers/dateFormating.js'
 import './invoicesTable.html';
 
 Template.InvoicesTable.onCreated(function bodyOnCreated() {
@@ -42,7 +41,6 @@ function getTimeFilter(type) {
   	} 
 }
 
-
 function createQuerytimeFilter(state) {
 	const timeFilter = getTimeFilter(state.get('timeFilter'))
  	const queryFilter = {}
@@ -62,7 +60,6 @@ function createSort(state) {
   	createdAt: state.get('sortCreatedAt') === 'asc' ? 1 : -1,
   }
 }
-
 
 function getLoadLimit(state) {
 	return state.get('itemsLimit') // dont like it, coupling with route controller
@@ -108,10 +105,6 @@ Template.InvoicesTable.helpers({
   loadedInvoices() { // passed to infiniteScroll
     const instance = Template.instance()
     return instance.state.get('loadedInvoices')
-  },
-
-  dateFormating(date) {
-  	return moment(date).format('YYYY-MM-DD')
   },
 
 });

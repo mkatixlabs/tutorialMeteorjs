@@ -18,5 +18,6 @@ Template.TimeFilters.events( {
     const instance = Template.instance().data
     instance.onTimeFilterSelected(event.target.id)
     event.preventDefault() 
-  }
+  },
+  
 })

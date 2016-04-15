@@ -13,7 +13,7 @@ Template.InfiniteScroll.onRendered(function() {
 });
 
 Template.InfiniteScroll.onDestroyed(function() {
-  $(window).off("scroll", this.scrollHandler);
+	$(window).off("scroll", this.scrollHandler);
 });
 
 const LOAD_SIZE = 25
