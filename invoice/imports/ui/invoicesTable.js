@@ -13,14 +13,14 @@ import {
 
 
 import moment from 'moment';
+import './infiniteScroll.js'
 import './timeFilters.js';
 import './invoicesTable.html';
 
-Template.invoicesTable.onCreated(function bodyOnCreated() {
+Template.InvoicesTable.onCreated(function bodyOnCreated() {
 	const controllerState = Iron.controller().state
 	this.state = new ReactiveDict(0)
 	this.state.set('loadedInvoices', 0)
-	  	//this.state.set('loadedInvoices', this.state.get('loadedInvoices') + 5)
 	
 	this.autorun( () => {
 		Meteor.subscribe('invoices', createQuerytimeFilter(controllerState), createQuerySortAndLimit(controllerState));
@@ -28,20 +28,8 @@ Template.invoicesTable.onCreated(function bodyOnCreated() {
  
 });  
 
-Template.invoicesTable.onRendered(function(){
-  const controllerState = Iron.controller().state;
-  this.scrollHandler = () => {
-    return showMoreVisible(controllerState);
-  }
-
-  $(window).on("scroll" ,this.scrollHandler);
-});
-
-Template.invoicesTable.onDestroyed(function(){
-  $(window).off("scroll", this.scrollHandler);
-});
-
-function gettimeFilter(type) {
+// filter functions
+function getTimeFilter(type) {
 	switch (type) {
   		case "today":
   			return moment().subtract(1, 'days').startOf('day')
@@ -54,19 +42,20 @@ function gettimeFilter(type) {
   	} 
 }
 
+
 function createQuerytimeFilter(state) {
-	const timeFilter = gettimeFilter(state.get('timeFilter'))
+	const timeFilter = getTimeFilter(state.get('timeFilter'))
  	const queryFilter = {}
-	/* $gte selects the documents where the value of the field is greater than or equal to (i.e. >=)
-  		a specified value (e.g. value.) */
-  	if (timeFilter !== null) {
-    	queryFilter.createdAt = {
-    	$gte: timeFilter.toDate()
-    	}
-  	}
-  	return queryFilter
+
+  if (timeFilter !== null) {
+    queryFilter.createdAt = {
+      $gte: timeFilter.toDate()
+    }
+  }
+  return queryFilter
 }
 
+// sort functions
 function createSort(state) {
   return {
   	total: state.get('sortTotal') === 'asc' ? 1 : -1,
@@ -74,8 +63,9 @@ function createSort(state) {
   }
 }
 
+
 function getLoadLimit(state) {
-	return state.get('invoiceLimit')
+	return state.get('itemsLimit') // dont like it, coupling with route controller
 }
 
 function createQuerySortAndLimit(state) {
@@ -91,30 +81,7 @@ function getQueryFromState(state) {
   return query
 }
 
-const LOAD_SIZE = 25
-function showMoreVisible(state) {
-    var threshold, target = $("#showMoreResults");
-
-    if (!target.length) 
-    	return;
- 
-    threshold = $(window).scrollTop() + $(window).height() - target.height();
-    if (target.offset().top < threshold) {
-        if (!target.data("visible")) {
-            state.set("invoiceLimit", state.get("invoiceLimit") + LOAD_SIZE);
-        }
-    } else {
-        if (target.data("visible")) {
-            target.data("visible", false);
-        }
-    }        
-}
- 
-function getLoadedInvoices(state) {
-	return state.get('loadedInvoices')
-}
-
-Template.invoicesTable.helpers({
+Template.InvoicesTable.helpers({
  
   invoices() {
   	const controllerState = Iron.controller().state;
@@ -138,19 +105,18 @@ Template.invoicesTable.helpers({
     }
   },
 
+  loadedInvoices() { // passed to infiniteScroll
+    const instance = Template.instance()
+    return instance.state.get('loadedInvoices')
+  },
+
   dateFormating(date) {
   	return moment(date).format('YYYY-MM-DD')
   },
 
-  moreResults() {
-  	const controllerState = Iron.controller().state;
-  	const templateState = Template.instance().state
-  	return !(getLoadedInvoices(templateState) < getLoadLimit(controllerState));
-  },
-
 });
 
-Template.invoicesTable.events({
+Template.InvoicesTable.events({
 
   'click .sort'(event, instance) {
     const controllerState = Iron.controller().state;

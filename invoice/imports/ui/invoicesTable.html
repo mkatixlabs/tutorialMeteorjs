@@ -1,4 +1,4 @@
-<template name="invoicesTable">
+<template name="InvoicesTable">
   {{> TimeFilters actual=currentTimeFilter onTimeFilterSelected=onTimeFilterSelected}}
   <table>
     <tr>
@@ -7,20 +7,14 @@
       <th>CREATED_AT <button class="sort" value="sortCreatedAt"> sort </button> </th>
     </tr>
 
-
     {{#each invoices}}
     <tr>
-    <th><span class="text">{{invoiceNumber}}</span></th>
-    <th><span class="number">{{total}}</span></th>
-    <th><span class="date">{{dateFormating createdAt}}</span></th>
+      <th><span class="text">{{invoiceNumber}}</span></th>
+      <th><span class="number">{{total}}</span></th>
+      <th><span class="date">{{dateFormating createdAt}}</span></th>
     </tr>
     {{/each}}
 
-    {{#if moreResults}}
-    <div id="showMoreResults" style="margin-left: 25px;">
-        <span class="loading">Loading...</span>
-    </div>
-    {{/if}}
-  
+    {{> InfiniteScroll loadedItems=loadedInvoices}}
   </table>
 </template>
