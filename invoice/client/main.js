@@ -16,9 +16,18 @@ Router.route('/invoices/:timeFilter', function () {
   this.state.set('timeFilter', this.params.timeFilter)
   this.state.set('sortTotal', this.params.query.sortTotal)
   this.state.set('sortCreatedAt', this.params.query.sortCreatedAt)
-  this.state.set('itemsLimit', 25)
 
-  this.render('InvoicesTable', {to:'main'})
+  this.render('InvoicesTable', {to:'main', 
+    data: function() {
+      return {
+        timeFilter: this.state.get('timeFilter'),
+        sort: {
+            sortTotal: this.state.get('sortTotal'),
+            sortCreatedAt: this.state.get('sortCreatedAt'),
+          }, 
+      } 
+    } 
+  })
 }, {
   name: 'invoices'
 } );

@@ -22,3 +22,4 @@ space:template-controller
 aslagle:reactive-table
 reactive-dict
 iron:router
+session
