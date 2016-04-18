@@ -3,6 +3,7 @@ import { Template } from 'meteor/templating';
 import { ReactiveDict } from 'meteor/reactive-dict';
 import { Invoices } from '../api/invoices.js';
 
+import './searchBar.js';
 import './loadingIndicator.js'
 import './timeFilters.js';
 import '../helpers/dateFormating.js'
@@ -40,6 +41,10 @@ function getInvoicesIncrement(state) {
  function getLoadedInvoices(state) { 
     return state.get('loadedInvoices')
  }
+ 
+ function getInvoicesSearchFields() {
+    return  ["invoicesNumber", "email"]
+ }
 
 Template.InvoicesTable.helpers({
  
@@ -76,6 +81,17 @@ Template.InvoicesTable.helpers({
       setInvociesLimit(instance.state, getInvociesLimit(instance.state) + getInvoicesIncrement(instance.state))
     }
   },
+  
+  getSearchFields() {
+    return getInvoicesSearchFields()
+  },
+  
+  findBy() {
+    return function(query) {
+      console.log(query)
+      console.log(Invoices.findByQuery(query))
+    }
+  } 
 
 });
 

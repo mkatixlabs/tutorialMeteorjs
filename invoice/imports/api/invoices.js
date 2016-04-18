@@ -28,8 +28,8 @@ function castTimeFilterToDate(type) {
 // sort functions
 function createSort(sort) {
   return {
-    total: sort.sortTotal === 'asc' ? 1 : -1,
     createdAt: sort.sortCreatedAt === 'asc' ? 1 : -1,
+    total: sort.sortTotal === 'asc' ? 1 : -1,
   }
 }
 
@@ -53,4 +53,15 @@ function createQuerytimeFilter(timeFilter) {
 
 Invoices.findByTimeFilter = function(timeFilter, sort, limit) {
 	return Invoices.find(createQuerytimeFilter(timeFilter), createQuerySortAndLimit(sort, limit))
+}
+
+Invoices.findByQuery = function (query) {
+  let queryFilter = {}
+  if (query.value !== null) {
+    const criteria = {$regex: ".*" + query.value + "*"}
+    const filterType = query.findBy
+    queryFilter = {filterType : criteria}
+  }
+  console.log(Invoices.find(queryFilter).count())
+  return Invoices.find(queryFilter) 
 }

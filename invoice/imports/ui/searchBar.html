@@ -1,0 +1,10 @@
+<template name="SearchBar">
+    <div>search: <input class="searchValue" type="text" value="">
+    <select class="searchBy">
+        {{#each field in searchFields}}
+        <option value={{field}}> by {{field}} </option> 
+        {{/each}}
+    </select>
+    <button type="button" class="search"> do! </button>
+    </div> 
+</template>

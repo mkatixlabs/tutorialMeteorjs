@@ -1,8 +1,12 @@
 <template name="InvoicesTable">
   {{> TimeFilters actual=currentTimeFilter onTimeFilterSelected=onTimeFilterSelected}}
+    
+  {{> SearchBar fields=getSearchFields findBy=findBy}}  
+  
   <table>
     <tr>
       <th>INVOICE_NUMBER</th>
+      <th>EMAIL</th>
       <th>TOTAL <button class="sort" value="sortTotal"> sort </button> </th>
       <th>CREATED_AT <button class="sort" value="sortCreatedAt"> sort </button> </th>
     </tr>
@@ -10,6 +14,7 @@
     {{#each invoices}}
     <tr>
       <th><span class="text">{{invoiceNumber}}</span></th>
+      <th><span class="text">{{email}}</span></th>
       <th><span class="number">{{total}}</span></th>
       <th><span class="date">{{simpleFormat createdAt}}</span></th>
     </tr>
