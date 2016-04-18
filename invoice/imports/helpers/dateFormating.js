@@ -1,7 +1,4 @@
-import { 
-	Template 
-} from 'meteor/templating';
-
+import { Template } from 'meteor/templating';
 import moment from 'moment';
 
 Template.registerHelper('simpleFormat', (date) => {

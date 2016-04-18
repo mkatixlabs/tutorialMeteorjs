@@ -1,7 +1,4 @@
-import {
-  Mongo 
-} from 'meteor/mongo';
-
+import { Mongo } from 'meteor/mongo';
 import moment from 'moment'; 
 
 export const Invoices = new Mongo.Collection('invoices');

@@ -15,6 +15,6 @@
     </tr>
     {{/each}}
 
-    {{> InfiniteScroll loadedItems=loadedInvoices itemsLimit=invoicesLimit updateItemsLimit=updateInvoicesLimit}}
+    {{> LoadingIndicator update=updateInvoicesLimit loadingCondition=ifMoreResults}}
   </table>
 </template>

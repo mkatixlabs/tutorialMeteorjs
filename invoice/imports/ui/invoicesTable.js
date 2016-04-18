@@ -3,7 +3,7 @@ import { Template } from 'meteor/templating';
 import { ReactiveDict } from 'meteor/reactive-dict';
 import { Invoices } from '../api/invoices.js';
 
-import './infiniteScroll.js'
+import './loadingIndicator.js'
 import './timeFilters.js';
 import '../helpers/dateFormating.js'
 import './invoicesTable.html';
@@ -37,6 +37,10 @@ function getInvoicesIncrement(state) {
   return state.get("invoicesIncrement")
 }
 
+ function getLoadedInvoices(state) { 
+    return state.get('loadedInvoices')
+ }
+
 Template.InvoicesTable.helpers({
  
   invoices() {
@@ -60,15 +64,10 @@ Template.InvoicesTable.helpers({
       })
     }
   },
-
-  loadedInvoices() { // passed to infiniteScroll
+  
+  ifMoreResults() {
     const instance = Template.instance()
-    return instance.state.get('loadedInvoices')
-  },
-
-  invoicesLimit() {
-    const instance = Template.instance()
-    return getInvociesLimit(instance.state)
+    return !(getLoadedInvoices(instance.state) < getInvociesLimit(instance.state))
   },
 
   updateInvoicesLimit () {
