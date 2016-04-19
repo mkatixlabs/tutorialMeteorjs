@@ -23,7 +23,8 @@ Template.SearchBar.events({
   'click .search': (event, template) => {
     const instance = Template.instance()
     const query = {'value': getQueryValue(instance) , 'findBy': getQuerySearchBy(instance)}
-    instance.data.findBy(query)
+    console.log("busca!")
+    instance.data.searchOn(query)
     event.preventDefault() 
   },
   

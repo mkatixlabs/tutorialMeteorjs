@@ -1,7 +1,7 @@
 <template name="InvoicesTable">
   {{> TimeFilters actual=currentTimeFilter onTimeFilterSelected=onTimeFilterSelected}}
     
-  {{> SearchBar fields=getSearchFields findBy=findBy}}  
+  {{> SearchBar fields=getSearchFields findBy=findBy searchOn=searchOn}}  
   
   <table>
     <tr>

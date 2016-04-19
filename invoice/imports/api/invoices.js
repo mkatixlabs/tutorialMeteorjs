@@ -4,8 +4,8 @@ import moment from 'moment';
 export const Invoices = new Mongo.Collection('invoices');
 
 if (Meteor.isServer) {
-  Meteor.publish('invoices', function invoicesPublication(timeFilter, sort, limit) {
-    return Invoices.find(createQuerytimeFilter(timeFilter), createQuerySortAndLimit(sort, limit))
+  Meteor.publish('invoices', function invoicesPublication(limit) {
+    return Invoices.find({}, Invoices.createSortAndLimitQuery({}, limit))
   });
 }
 
@@ -33,14 +33,14 @@ function createSort(sort) {
   }
 }
 
-function createQuerySortAndLimit(sort, limit) {
+Invoices.createSortAndLimitQuery = function(sort, limit) {
   return {
     sort: createSort(sort),
     limit: limit,
   }
 }
 
-function createQuerytimeFilter(timeFilter) {
+Invoices.createTimeFilterQuery = function(timeFilter) {
   const date = castTimeFilterToDate(timeFilter)
  	const queryFilter = {}
   if (date !== null) {
@@ -48,20 +48,22 @@ function createQuerytimeFilter(timeFilter) {
       $gte: date.toDate()
     }
   }
+  console.log(queryFilter)
   return queryFilter
 } 
 
-Invoices.findByTimeFilter = function(timeFilter, sort, limit) {
-	return Invoices.find(createQuerytimeFilter(timeFilter), createQuerySortAndLimit(sort, limit))
-}
-
-Invoices.findByQuery = function (query) {
+Invoices.createSearchFilterQuery = function(query) {
   let queryFilter = {}
   if (query.value !== null) {
-    const criteria = {$regex: ".*" + query.value + "*"}
-    const filterType = query.findBy
-    queryFilter = {filterType : criteria}
+    const queryRegex = new RegExp('^' + query.value + '.*')
+    const criteria = {$regex: queryRegex}
+    queryFilter[`${query.findBy}`] = criteria
   }
-  console.log(Invoices.find(queryFilter).count())
-  return Invoices.find(queryFilter) 
+  
+  console.log(queryFilter)
+  return queryFilter
+}
+
+Invoices.findBy = function(query, sort, limit) {
+	return Invoices.find(query, Invoices.createSortAndLimitQuery(sort, limit))
 }
