@@ -1,10 +1,16 @@
 <template name="SearchBar">
-    <div>search: <input class="searchValue" type="text" value="">
-    <select class="searchBy">
-        {{#each field in searchFields}}
-        <option value={{field}}> by {{field}} </option> 
-        {{/each}}
-    </select>
-    <button type="button" class="search"> do! </button>
+    <div class="input-group">
+        <div class="input-group-btn">
+        <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" 
+                aria-haspopup="true" aria-expanded="false">
+                {{selectedSearchField}} <span class="caret"></span>
+        </button>
+        <ul class="dropdown-menu">
+            {{#each field in searchFields}}
+                <li> <button value={{field}} class="btn btn-link selectSearchField"> {{field}} </button> </li> 
+            {{/each}}
+        </ul>
+      </div><!-- /btn-group -->
+      <input type="text" class="searchValue form-control" value="">
     </div> 
 </template>

@@ -46,5 +46,9 @@ Template.LoadingIndicator.helpers({
  		const instance = Template.instance()
   		return instance.data.loadingCondition
   	},
+      
+   options(){
+       return ["pepe", "pepon"]
+   }
 
 });

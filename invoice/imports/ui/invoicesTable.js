@@ -19,12 +19,15 @@ Template.InvoicesTable.onCreated(function bodyOnCreated() {
   // search bar
   this.state.set('search', false)
   this.state.set('searchQuery', {})
+  const timeFilterQuery = Invoices.createTimeFilterQuery(this.data.timeFilter)
   
 	this.autorun( () => {
-		Meteor.subscribe('invoices', getInvociesLimit(this.state));
+    console.log("autorun")
+		Meteor.subscribe('invoices', timeFilterQuery ,  this.data.sort, getInvociesLimit(this.state));
 	})
-});  
-
+  
+});     
+ 
 function getQueryFromState(state) {
   const query = state
   delete query.timeFilter
@@ -49,7 +52,7 @@ function getInvoicesIncrement(state) {
  }
  
  function getInvoicesSearchFields() {
-    return  ["invoicesNumber", "email"]
+    return  ["invoiceNumber", "email"]
  }
  
 // for search 
@@ -79,11 +82,9 @@ Template.InvoicesTable.helpers({
       const timeFilterQuery = Invoices.createTimeFilterQuery(instance.data.timeFilter)
       invoices = Invoices.findBy(timeFilterQuery, instance.data.sort, getInvociesLimit(instance.state))
     } else {
-      console.log("entre!")
       const searchFilterQuery = Invoices.createSearchFilterQuery(getSearchQuery(instance.state))
       invoices = Invoices.findBy(searchFilterQuery, instance.data.sort, getInvociesLimit(instance.state))
     }
-    console.log(invoices.count())
     instance.state.set('loadedInvoices', invoices.count())
   	return invoices
   },
@@ -128,6 +129,15 @@ Template.InvoicesTable.helpers({
       setSearchQuery(instance.state, query)
     }
   },
+  
+  findBy() {
+     const instance = Template.instance()
+     return function(query) {   
+      setSearchQuery(instance.state, query)
+      const searchFilterQuery = Invoices.createSearchFilterQuery(getSearchQuery(instance.state))
+      return Invoices.findBy(searchFilterQuery, instance.data.sort, getInvociesLimit(instance.state))
+    }
+  }
 
 });
 

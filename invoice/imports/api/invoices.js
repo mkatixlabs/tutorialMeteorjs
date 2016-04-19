@@ -1,11 +1,12 @@
 import { Mongo } from 'meteor/mongo';
 import moment from 'moment'; 
+import isANumber from '../helpers/regexpFunctions'
 
 export const Invoices = new Mongo.Collection('invoices');
 
 if (Meteor.isServer) {
-  Meteor.publish('invoices', function invoicesPublication(limit) {
-    return Invoices.find({}, Invoices.createSortAndLimitQuery({}, limit))
+  Meteor.publish('invoices', function invoicesPublication(filter, sort, limit) {
+    return Invoices.findBy(filter, Invoices.createSortAndLimitQuery(sort, limit))
   });
 }
 
@@ -48,18 +49,23 @@ Invoices.createTimeFilterQuery = function(timeFilter) {
       $gte: date.toDate()
     }
   }
-  console.log(queryFilter)
   return queryFilter
 } 
 
+
 Invoices.createSearchFilterQuery = function(query) {
   let queryFilter = {}
-  if (query.value !== null) {
-    const queryRegex = new RegExp('^' + query.value + '.*')
-    const criteria = {$regex: queryRegex}
+  let criteria = {}
+  if (query.value !== null && query.value !== '') {
+   
+    if (isANumber(query.value)) {
+      criteria = { $in: [parseInt(query.value)] }
+    } else { // ifTextValue
+      const queryRegex = new RegExp(query.value + '.*')
+      criteria = {$regex: queryRegex}
+    }
     queryFilter[`${query.findBy}`] = criteria
   }
-  
   console.log(queryFilter)
   return queryFilter
 }

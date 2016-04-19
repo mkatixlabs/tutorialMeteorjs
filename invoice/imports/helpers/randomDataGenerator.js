@@ -1,7 +1,7 @@
 import faker from 'faker'; 
 
 function generateRandomNumber(digits) {
-	return faker.finance.account(digits)
+	return parseInt(faker.finance.account(digits))
 }
 
 function generateRandomEmail() {
