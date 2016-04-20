@@ -5,7 +5,7 @@ import './paging.html'
 Template.Paging.helpers({
     disableNext(actualPages, totalPages) {
         let disabled = ''
-        if ( actualPages === totalPages) {
+        if (actualPages >= totalPages) {
             disabled = 'disabled'
         }
         return disabled
@@ -13,7 +13,7 @@ Template.Paging.helpers({
     
     disablePrevious(actualPages) {
         let disabled = ''
-        if ( actualPages === 1) {
+        if (actualPages <= 1) {
             disabled = 'disabled'
         }
         return disabled
