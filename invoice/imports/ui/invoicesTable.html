@@ -3,6 +3,8 @@
     
   {{> SearchBar searchFields=getSearchFields preFind=findBy searchOn=searchOn}}  
   
+  {{> Paging onPaging=updateInvoices totalPages=totalPages actualPage=actualPage}}
+  
   <div class="table-responsive">
   <table class="table">
     <tr>
@@ -21,7 +23,6 @@
     </tr>
     {{/each}}
 
-    {{> LoadingIndicator update=updateInvoicesLimit loadingCondition=ifMoreResults}}
   </table>
   </div>
   

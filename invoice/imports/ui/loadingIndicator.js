@@ -1,7 +1,8 @@
 import { Template } from 'meteor/templating'
 import { ReactiveDict } from 'meteor/reactive-dict';
-import './loadingIndicator.html'
+import './loadingIndicator.html' 
 
+// for use in html.. {{> LoadingIndicator update=updateInvoicesLimit loadingCondition=ifMoreResults}}
 Template.LoadingIndicator.onRendered(function() {
 
   	this.scrollHandler = () => {
@@ -47,8 +48,4 @@ Template.LoadingIndicator.helpers({
   		return instance.data.loadingCondition
   	},
       
-   options(){
-       return ["pepe", "pepon"]
-   }
-
 });

@@ -1,4 +1,5 @@
 import { Mongo } from 'meteor/mongo';
+import { Meteor } from 'meteor/meteor';
 import moment from 'moment'; 
 import isANumber from '../helpers/regexpFunctions'
 
@@ -34,9 +35,10 @@ function createSort(sort) {
   }
 }
 
-Invoices.createSortAndLimitQuery = function(sort, limit) {
+Invoices.createSortAndLimitQuery = function(sort, limit, skip) {
   return {
     sort: createSort(sort),
+    skip: skip,
     limit: limit,
   }
 }
@@ -69,6 +71,14 @@ Invoices.createSearchFilterQuery = function(query) {
   return queryFilter
 }
 
-Invoices.findBy = function(query, sort, limit) {
-	return Invoices.find(query, Invoices.createSortAndLimitQuery(sort, limit))
+Invoices.findBy = function(query, sort, limit, skip) {
+	return Invoices.find(query, Invoices.createSortAndLimitQuery(sort, limit, skip))
 }
+
+Invoices.totalInvoices = function(filter) {
+  return Invoices.find(filter).count()
+}
+
+Meteor.methods({
+ 
+})

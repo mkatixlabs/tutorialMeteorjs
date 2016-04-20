@@ -4,15 +4,15 @@ import { ReactiveDict } from 'meteor/reactive-dict';
 import { Invoices } from '../api/invoices.js';
 
 import './searchBar.js';
-import './loadingIndicator.js'
+import './paging.js'
 import './timeFilters.js';
 import '../helpers/dateFormating.js'
 import './invoicesTable.html';
 
 Template.InvoicesTable.onCreated(function bodyOnCreated() {
-  
 	this.state = new ReactiveDict(0)
-  initStateForLoadingIndicator(this.state)
+  const limit = 30
+  setInvociesLimit(this.state, limit)
   initStateForSearchBar(this.state)
   const controllerState =  Iron.controller().state
   
@@ -25,21 +25,38 @@ Template.InvoicesTable.onCreated(function bodyOnCreated() {
     }
     const limit = getInvociesLimit(this.state)
 		Meteor.subscribe('invoices', timeFilterQuery , sort, limit);
-	})
-})
+    initStateForPaging(this.state, timeFilterQuery)
+	})  
   
-function initStateForLoadingIndicator(state) {
-  const limit = 25
-  state.set('loadedInvoices', 0)	
-  state.set('invociesLimit', limit)
-  state.set('invoicesIncrement', limit)
-}  
+})
 
-function initStateForSearchBar(state) {
-  state.set('search', false)
-  state.set('searchQuery', {})
-}  
- 
+// for paging
+function initStateForPaging(state, filter) { // run after subscribe
+    setTotalPages(state, Invoices.totalInvoices(filter))
+    setActualPage(state, 1)
+}
+
+function getActualSkipIndex(state) {  
+  return (getInvociesLimit(state) * (getActualPage(state) - 1 ))
+}
+
+function getActualPage(state) {
+  return state.get('actualPage')
+}
+
+function setActualPage(state, pageNumber) {
+  state.set('actualPage', pageNumber)
+}
+
+function getTotalPages(state) {
+  return state.get('totalPages')
+}
+
+function setTotalPages(state, totalInvoices) {
+  state.set('totalPages', Math.ceil(totalInvoices / getInvociesLimit(state)))
+}
+  
+// for filter
 function getQueryFromState(state) {
   const query = state
   delete query.timeFilter
@@ -47,11 +64,17 @@ function getQueryFromState(state) {
 }
 
 // for loading indicator
-function getInvociesLimit(state) {
+function initStateForLoadingIndicator(state, limit) {
+  state.set('loadedInvoices', 0)	
+  state.set('invociesLimit', limit)
+  state.set('invoicesIncrement', limit)
+}  
+
+function getInvociesLimit(state) { // for paging to
   return state.get("invociesLimit")
 }
 
-function setInvociesLimit(state, newLimit) {
+function setInvociesLimit(state, newLimit) {  // for paging to
   return state.set("invociesLimit", newLimit)
 }
 
@@ -59,15 +82,20 @@ function getInvoicesIncrement(state) {
   return state.get("invoicesIncrement")
 }
 
- function getLoadedInvoices(state) { 
-    return state.get('loadedInvoices')
- }
+function getLoadedInvoices(state) { 
+  return state.get('loadedInvoices')
+}
  
- function getInvoicesSearchFields() {
-    return  ["invoiceNumber", "email"]
- }
+// for search  
+function initStateForSearchBar(state) {
+  state.set('search', false)
+  state.set('searchQuery', {})
+} 
+
+function getInvoicesSearchFields() {
+  return  ["invoiceNumber", "email"]
+}
  
-// for search 
 function searchIsActivate(state) {
   return state.get("search")
 }
@@ -84,23 +112,34 @@ function setSearchQuery(state, query) {
   state.set("searchQuery", query)
 }
 
+// time filters or search 
+function createCorrectFilter(instance) {
+   let filter = {}
+   if (!searchIsActivate(instance.state)) {
+    filter = Invoices.createTimeFilterQuery(instance.data.timeFilter)
+   } else {
+    filter = Invoices.createSearchFilterQuery(getSearchQuery(instance.state))
+   }
+   return filter
+}
+
 Template.InvoicesTable.helpers({
  
   invoices() {
   	const instance = Template.instance()
-    let invoices = {}
     
-    if (!searchIsActivate(instance.state)) {
-      const timeFilterQuery = Invoices.createTimeFilterQuery(instance.data.timeFilter)
-      invoices = Invoices.findBy(timeFilterQuery, instance.data.sort, getInvociesLimit(instance.state))
-    } else {
-      const searchFilterQuery = Invoices.createSearchFilterQuery(getSearchQuery(instance.state))
-      invoices = Invoices.findBy(searchFilterQuery, instance.data.sort, getInvociesLimit(instance.state))
-    }
-    instance.state.set('loadedInvoices', invoices.count())
-  	return invoices
+    const filter = createCorrectFilter(instance)
+    const sort = instance.data.sort
+    const limit = getInvociesLimit(instance.state)
+    const skip = getActualSkipIndex(instance.state)
+    
+    const totalPages = Invoices.totalInvoices(filter)
+    setTotalPages(instance.state, totalPages)
+    
+  	return Invoices.findBy(filter, sort, limit, skip) 
   },
 
+  // for filters
   currentTimeFilter() {
     const instance = Template.instance().data
     return instance.timeFilter
@@ -118,6 +157,38 @@ Template.InvoicesTable.helpers({
     }
   },
   
+  // for paging
+  updateInvoices() {
+    const instance = Template.instance()
+    return function(event) {
+      switch (event) {
+        case 'next':
+          setActualPage(instance.state, getActualPage(instance.state) + 1)
+          break
+        case 'previous':
+          setActualPage(instance.state, getActualPage(instance.state) -1 )
+          break
+        case 'first':
+          setActualPage(instance.state, 1)
+          break
+        case 'last':
+          setActualPage(instance.state, getTotalPages(instance.state))
+          break      
+     }
+   }
+  },
+  
+  actualPage() {
+    const instance = Template.instance()
+    return getActualPage(instance.state)
+  },
+  
+  totalPages() {
+    const instance = Template.instance()
+    return getTotalPages(instance.state)
+  },
+  
+  // for loading indicator
   ifMoreResults() {
     const instance = Template.instance()
     return !(getLoadedInvoices(instance.state) < getInvociesLimit(instance.state))
@@ -130,6 +201,7 @@ Template.InvoicesTable.helpers({
     }
   },
   
+  // for search methods
   getSearchFields() {
     return getInvoicesSearchFields()
   },
@@ -142,6 +214,7 @@ Template.InvoicesTable.helpers({
     }
   },
   
+  // -> for partial results - todo! 
   findBy() {
      const instance = Template.instance()
      return function(query) {   
