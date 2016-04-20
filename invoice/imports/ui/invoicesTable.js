@@ -10,23 +10,36 @@ import '../helpers/dateFormating.js'
 import './invoicesTable.html';
 
 Template.InvoicesTable.onCreated(function bodyOnCreated() {
-  const limit = 25
+  
 	this.state = new ReactiveDict(0)
-	// loading indicator
-  this.state.set('loadedInvoices', 0)	
-  this.state.set('invociesLimit', limit)
-  this.state.set('invoicesIncrement', limit)
-  // search bar
-  this.state.set('search', false)
-  this.state.set('searchQuery', {})
-  const timeFilterQuery = Invoices.createTimeFilterQuery(this.data.timeFilter)
+  initStateForLoadingIndicator(this.state)
+  initStateForSearchBar(this.state)
+  const controllerState =  Iron.controller().state
   
 	this.autorun( () => {
-    console.log("autorun")
-		Meteor.subscribe('invoices', timeFilterQuery ,  this.data.sort, getInvociesLimit(this.state));
+    // if gets the values from this.data, autorun wont run again because wasnt attached a reactive variable 
+    const timeFilterQuery = Invoices.createTimeFilterQuery(controllerState.get('timeFilter'))
+    const sort = {
+      sortTotal: controllerState.get('sortTotal'),
+      sortCreatedAt: controllerState.get('sortCreatedAt'),
+    }
+    const limit = getInvociesLimit(this.state)
+		Meteor.subscribe('invoices', timeFilterQuery , sort, limit);
+    console.log("fin autorun")
 	})
+})
   
-});     
+function initStateForLoadingIndicator(state) {
+  const limit = 25
+  state.set('loadedInvoices', 0)	
+  state.set('invociesLimit', limit)
+  state.set('invoicesIncrement', limit)
+}  
+
+function initStateForSearchBar(state) {
+  state.set('search', false)
+  state.set('searchQuery', {})
+}  
  
 function getQueryFromState(state) {
   const query = state

@@ -9,7 +9,6 @@ Router.route('/', function () {
 });
 
 Router.route('/invoices/:timeFilter', function () {
-  console.log("entre")
 	if (this.params.timeFilter === null) {
 		this.redirect('/invoices/all')
   }
