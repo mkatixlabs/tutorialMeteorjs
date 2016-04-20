@@ -43,32 +43,27 @@ Invoices.createSortAndLimitQuery = function(sort, limit, skip) {
   }
 }
 
-Invoices.createTimeFilterQuery = function(timeFilter) {
-  const date = castTimeFilterToDate(timeFilter)
- 	const queryFilter = {}
+Invoices.addTimeQueryToFilter = function(timeQuery, filter) {
+  const date = castTimeFilterToDate(timeQuery)
   if (date !== null) {
-    queryFilter.createdAt = {
+    filter.createdAt = {
       $gte: date.toDate()
     }
   }
-  return queryFilter
 } 
 
-
-Invoices.createSearchFilterQuery = function(query) {
-  let queryFilter = {}
+Invoices.addSearchQueryToFilter = function(searchQuery, filter) {
   let criteria = {}
-  if (query.value !== null && query.value !== '') {
+  if (searchQuery !== null && searchQuery.value !== null && searchQuery.value !== '') {
    
-    if (isANumber(query.value)) {
-      criteria = { $in: [parseInt(query.value)] }
+    if (isANumber(searchQuery.value)) {
+      criteria = { $in: [parseInt(searchQuery.value)] }
     } else { // ifTextValue
-      const queryRegex = new RegExp(query.value + '.*')
+      const queryRegex = new RegExp(searchQuery.value + '.*')
       criteria = {$regex: queryRegex}
     }
-    queryFilter[`${query.findBy}`] = criteria
+    filter[`${searchQuery.findBy}`] = criteria
   }
-  return queryFilter
 }
 
 Invoices.findBy = function(query, sort, limit, skip) {

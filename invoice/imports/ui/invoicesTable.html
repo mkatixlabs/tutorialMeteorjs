@@ -1,8 +1,9 @@
 <template name="InvoicesTable">
+
   {{> TimeFilters actual=currentTimeFilter onTimeFilterSelected=onTimeFilterSelected}}
-    
-  {{> SearchBar searchFields=getSearchFields preFind=findBy searchOn=searchOn}}  
-  
+
+  {{> SearchBar searchFields=getSearchFields searchOn=searchOn}} 
+
   {{> Paging onPaging=updateInvoices totalPages=totalPages actualPage=actualPage}}
   
   <div class="table-responsive">

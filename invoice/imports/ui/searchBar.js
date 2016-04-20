@@ -56,24 +56,7 @@ Template.SearchBar.helpers({
 })
 
 Template.SearchBar.events({
-    
-   /*'keypress .searchValue': (event, template) => {
-     const instance = Template.instance()
-     const preSearch = 4 
-     const value = event.target.value
-     console.log(value.length)
-     if (value.length >= preSearch) {
-        console.log("pre busquedad!")
-        //$('.dropdown-toggle').dropdown()
-        
-        const query = {'value': getQueryValue(instance) , 'findBy': getQuerySearchBy(instance)}
-        const invoices = instance.data.preFind(query)
-        invoices.forEach(function(element) {
-        }, this);
-     }
-     
-  },*/
-  
+
   'click .selectSearchField': (event, template) => {
      const instance = Template.instance()
      setSelectedSearchField(instance.state, event.target.value)
