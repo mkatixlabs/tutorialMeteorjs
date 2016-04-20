@@ -22,28 +22,37 @@ function setSelectedSearchField(state, value) {
   state.set('selectedSearchField', value)
 }
 
-
 function getQueryValue(instance) {
-  console.log(instance.$('.searchValue')[0].value)
     return instance.$('.searchValue')[0].value
+}
+
+function cleanQueryValue(instance) {
+  instance.$('.searchValue')[0].value = ''
 }
 
 function createQuery(instance) {
   return {'value': getQueryValue(instance) , 'findBy': getQuerySearchBy(instance)}
 }
 
+function waitAndSearchTheQuery(instance, waitTime) {
+  return _.debounce(function() {
+        const query = {'value': getQueryValue(instance) , 'findBy': getSelectedSearchField(instance.state)}
+        instance.data.searchOn(query)
+    }, waitTime)()
+}
+
 Template.SearchBar.helpers({
 
   searchFields() {
     const instance = Template.instance()
-    return instance.data.searchFields
+    return instance.data.searchFields //  could pass a function to invoices table to clean the search ? =S
   },
   
   selectedSearchField() {
     const instance = Template.instance()
     return getSelectedSearchField(instance.state)
-  }
- 
+  },
+  
 })
 
 Template.SearchBar.events({
@@ -67,14 +76,13 @@ Template.SearchBar.events({
   
   'click .selectSearchField': (event, template) => {
      const instance = Template.instance()
-     console.log(event.target.value)
      setSelectedSearchField(instance.state, event.target.value)
   },
   
   'keypress .searchValue': (event, template) => {
     const instance = Template.instance()
-    const query = {'value': getQueryValue(instance) , 'findBy': getSelectedSearchField(instance.state)}
-    instance.data.searchOn(query)
+    const debounceWaitTime = 800
+    waitAndSearchTheQuery(instance, debounceWaitTime)
   },
   
 })

@@ -66,7 +66,6 @@ Invoices.createSearchFilterQuery = function(query) {
     }
     queryFilter[`${query.findBy}`] = criteria
   }
-  console.log(queryFilter)
   return queryFilter
 }
 

@@ -25,7 +25,6 @@ Template.InvoicesTable.onCreated(function bodyOnCreated() {
     }
     const limit = getInvociesLimit(this.state)
 		Meteor.subscribe('invoices', timeFilterQuery , sort, limit);
-    console.log("fin autorun")
 	})
 })
   
