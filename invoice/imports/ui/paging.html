@@ -1,9 +1,9 @@
  <template name="Paging">
  <ul class="pager">
-    <li class="first"><button id="first" type="button" class="btn btn-link loadPage"><span aria-hidden="true">&laquo;</span> First</button></li>
-    <li class="previous"><button id="previous" type="button" class="btn btn-link loadPage" {{disablePrevious actualPage}}><span aria-hidden="true">&larr;</span> previous</button></li>
+    <li class="first"><button id="first" type="button" class="btn loadPage" {{disablePrevious actualPage}}><span aria-hidden="true">&laquo;</span> First</button></li>
+    <li class="previous"><button id="previous" type="button" class="btn loadPage" {{disablePrevious actualPage}}><span aria-hidden="true">&larr;</span> previous</button></li>
     <li class="info"> Page {{actualPage}} of {{totalPages}}</li>
-    <li class="next"><button id="next" type="button" class="btn btn-link loadPage" {{disableNext actualPage totalPages}}>next <span aria-hidden="true">&rarr;</span></button></li>
-    <li class="last"><button id="last" type="button" class="btn btn-link loadPage">last <span aria-hidden="true">&raquo;</span></button></li>
+    <li class="next"><button id="next" type="button" class="btn loadPage" {{disableNext actualPage totalPages}}>next <span aria-hidden="true">&rarr;</span></button></li>
+    <li class="last"><button id="last" type="button" class="btn loadPage" {{disableNext actualPage totalPages}}>last <span aria-hidden="true">&raquo;</span></button></li>
  </ul>
  </template>

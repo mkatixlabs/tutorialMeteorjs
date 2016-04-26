@@ -28,12 +28,21 @@ function castTimeFilterToDate(type) {
 }
 
 // sort functions
-function createSort(sort) {
+/*function createSort(sort) {
   return {
     createdAt: sort.sortCreatedAt === 'asc' ? 1 : -1,
     total: sort.sortTotal === 'asc' ? 1 : -1,
   }
+}*/
+
+// sort functions
+function createSort(sort) {
+  const result = {}
+  const sortBy = sort.sortBy
+  result[sortBy] = sort.order === 'asc' ? 1 : -1
+  return result
 }
+
 
 Invoices.createSortAndLimitQuery = function(sort, limit, skip) {
   return {
@@ -59,8 +68,8 @@ Invoices.addSearchQueryToFilter = function(searchQuery, filter) {
     if (isANumber(searchQuery.value)) {
       criteria = { $in: [parseInt(searchQuery.value)] }
     } else { // ifTextValue
-      const queryRegex = new RegExp(searchQuery.value + '.*')
-      criteria = {$regex: queryRegex}
+      //const queryRegex = new RegExp(searchQuery.value + '.*')
+      criteria = {$regex: searchQuery.value + '.*'}
     }
     filter[`${searchQuery.findBy}`] = criteria
   }

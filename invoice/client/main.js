@@ -5,7 +5,7 @@ Router.configure({
 });
 
 Router.route('/', function () {
-  	this.redirect('/invoices/all?sortTotal=asc&sortCreatedAt=asc')
+  	this.redirect('/invoices/all?sortBy=total&order=asc')
 });
 
 Router.route('/invoices/:timeFilter', function () {
@@ -14,16 +14,16 @@ Router.route('/invoices/:timeFilter', function () {
   }
 
   this.state.set('timeFilter', this.params.timeFilter)
-  this.state.set('sortTotal', this.params.query.sortTotal)
-  this.state.set('sortCreatedAt', this.params.query.sortCreatedAt)
+  this.state.set('sortBy', this.params.query.sortBy)
+  this.state.set('order', this.params.query.order)
 
   this.render('InvoicesTable', {to:'main', 
     data: function() {
       return {
         timeFilter: this.state.get('timeFilter'),
         sort: {
-            sortTotal: this.state.get('sortTotal'),
-            sortCreatedAt: this.state.get('sortCreatedAt'),
+            sortBy: this.state.get('sortBy'),
+            order: this.state.get('order'),
           }, 
       } 
     } 

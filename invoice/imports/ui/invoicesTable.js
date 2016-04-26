@@ -20,21 +20,25 @@ Template.InvoicesTable.onCreated(function bodyOnCreated() {
     // if gets the values from this.data, autorun wont run again because wasnt attached a reactive variable 
     let filter = {}
     Invoices.addTimeQueryToFilter(controllerState.get('timeFilter'), filter)
+    Invoices.addSearchQueryToFilter(getSearchQuery(this.state), filter)
     const sort = {
-      sortTotal: controllerState.get('sortTotal'),
-      sortCreatedAt: controllerState.get('sortCreatedAt'),
+      sortBy: controllerState.get('sortBy'),
+      order: controllerState.get('order'),
     }
     const limit = getInvociesLimit(this.state)
 		Meteor.subscribe('invoices', filter , sort, limit);
     initStateForPaging(this.state, filter)
 	})  
-  
 })
 
 // for paging
 function initStateForPaging(state, filter) { // run after subscribe
     setTotalPages(state, Invoices.totalInvoices(filter))
-    setActualPage(state, 1)
+    if (getTotalPages(state) === 0) { // no results!
+        setActualPage(state, 0)
+    } else {
+      setActualPage(state, 1)
+    }
 }
 
 function getActualSkipIndex(state) {  
@@ -106,6 +110,17 @@ function composeFilter(instance) {
    Invoices.addTimeQueryToFilter(instance.data.timeFilter, filter)
    Invoices.addSearchQueryToFilter(getSearchQuery(instance.state), filter)
    return filter
+}
+
+// for sort
+function setSortBy(state, value) {
+    state.set('sortBy', value)
+}
+
+function setSortOrder(state) {
+    let order = state.get('order')
+    order === 'asc' ? order = 'desc' : order = 'asc'
+    state.set('order', order)
 }
 
 Template.InvoicesTable.helpers({
@@ -213,10 +228,9 @@ Template.InvoicesTable.events({
 
   'click .sort'(event, instance) {
     const controllerState = Iron.controller().state;
-    const sortType = event.target.value
-    let sortValue = controllerState.get(sortType)
-    sortValue === 'asc' ? sortValue = 'desc' : sortValue = 'asc'
-    controllerState.set(sortType, sortValue)
+    setSortBy(controllerState, event.target.value)
+    setSortOrder(controllerState)
+
     Router.go('invoices', {
        timeFilter: controllerState.get('timeFilter')
     }, {
