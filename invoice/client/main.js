@@ -5,7 +5,7 @@ Router.configure({
 });
 
 Router.route('/', function () {
-  	this.redirect('/invoices/all')
+  	this.redirect('/invoices/all?sortTotal=asc&sortCreatedAt=asc')
 });
 
 Router.route('/invoices/:timeFilter', function () {
